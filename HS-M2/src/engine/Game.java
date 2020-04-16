@@ -35,6 +35,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 	private Hero secondHero;
 	private Hero currentHero;
 	private Hero opponent;
+	private static Hero P1,P2;
 	public static MainWindow MainScreen = new MainWindow();
 
 	private ArrayList<JButton> curButtons = new ArrayList<JButton>();
@@ -178,8 +179,8 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 	}
 
 	public static void UpdatingMainScreen() throws FullHandException, CloneNotSupportedException, IOException {
-
-		Game g = new Game(new Hunter(), new Warlock());
+		
+		Game g = new Game(P1, P2);
 
 		for (int i = 0; i < 8; i++)
 			g.endTurn();
@@ -188,7 +189,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 		
 		CardsLeft.setFont(new Font("Serif", Font.PLAIN, MainScreen.getWidth() / 25));
 		JButton OpponentButton = new JButton();
-		OpponentButton
+		
 		MainScreen.opponent.add(OpponentButton);
 		
 		g.AddTwoButtons();
@@ -346,11 +347,13 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 				if (currentHero.getHand().get(i) instanceof Minion) {
 					try {
 						currentHero.playMinion((Minion) currentHero.getHand().get(i));
+						//MainScreen.currentHero.remove(selected);
 					} catch (NotYourTurnException | NotEnoughManaException | FullFieldException e1) {
-						e1.printStackTrace();
-						UpdateAll();
+						System.out.println(e1.getMessage());
+						
 					}
-					MainScreen.currentHero.remove(selected);
+					
+					UpdateAll();
 				}
 
 				else if (currentHero.getHand().get(i) instanceof Spell) {
@@ -424,6 +427,34 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 			}
 		}
 
+	}
+
+	/**
+	 * @return the p2
+	 */
+	public static Hero getP2() {
+		return P2;
+	}
+
+	/**
+	 * @param p2 the p2 to set
+	 */
+	public static void setP2(Hero p2) {
+		P2 = p2;
+	}
+
+	/**
+	 * @return the p1
+	 */
+	public static Hero getP1() {
+		return P1;
+	}
+
+	/**
+	 * @param p1 the p1 to set
+	 */
+	public static void setP1(Hero p1) {
+		P1 = p1;
 	}
 
 }
