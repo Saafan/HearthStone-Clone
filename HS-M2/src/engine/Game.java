@@ -1,5 +1,16 @@
 package engine;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+
 import exceptions.CannotAttackException;
 import exceptions.FullFieldException;
 import exceptions.FullHandException;
@@ -11,14 +22,32 @@ import exceptions.NotYourTurnException;
 import exceptions.TauntBypassException;
 import model.cards.Card;
 import model.cards.minions.Minion;
+import model.cards.spells.FieldSpell;
+import model.cards.spells.Spell;
 import model.heroes.Hero;
 import model.heroes.HeroListener;
+import model.heroes.Hunter;
+import model.heroes.Warlock;
+import view.MainWindow;
 
-public class Game implements ActionValidator, HeroListener {
+public class Game implements ActionValidator, HeroListener, ActionListener {
 	private Hero firstHero;
 	private Hero secondHero;
 	private Hero currentHero;
 	private Hero opponent;
+	public static MainWindow MainScreen = new MainWindow();
+
+	private ArrayList<JButton> curButtons = new ArrayList<JButton>();
+	private ArrayList<JButton> curFieldMinions = new ArrayList<JButton>();
+	private ArrayList<JButton> OppFieldMinions = new ArrayList<JButton>();
+
+	JButton selected = new JButton();
+
+	JButton curMinion = new JButton();
+	Minion curSelMinion = null;
+
+	JButton oppMinion = new JButton();
+	Minion OppSelMinion = null;
 
 	private GameListener listener;
 
@@ -144,8 +173,257 @@ public class Game implements ActionValidator, HeroListener {
 
 	}
 
+	public static void main(String[] args) throws CloneNotSupportedException, FullHandException, IOException {
+		UpdatingMainScreen();
+	}
+
+	public static void UpdatingMainScreen() throws FullHandException, CloneNotSupportedException, IOException {
+
+		Game g = new Game(new Hunter(), new Warlock());
+
+		for (int i = 0; i < 8; i++)
+			g.endTurn();
+
+		JLabel CardsLeft = new JLabel("There are " + g.opponent.getHand().size() + " Cards in The Opponent's Hand");
+		
+		CardsLeft.setFont(new Font("Serif", Font.PLAIN, MainScreen.getWidth() / 25));
+		JButton OpponentButton = new JButton();
+		OpponentButton
+		MainScreen.opponent.add(OpponentButton);
+		
+		g.AddTwoButtons();
+		g.UpdateAll();
+		MainScreen.repaint();
+		MainScreen.revalidate();
+	}
+
+	public void AddTwoButtons() {
+		JButton UseHeroPower = new JButton("Use Hero Power");
+		JButton EndTurn = new JButton("End Turn");
+		UseHeroPower.addActionListener(this);
+		EndTurn.addActionListener(this);
+		MainScreen.TwoButtons.add(UseHeroPower);
+		MainScreen.TwoButtons.add(EndTurn);
+	}
+
+	public void UpdateAll() {
+		UpdateCurrentHeroStatus();
+		UpdateCurrentOpponentStatus();
+		UpdateHandButtons();
+		UpdateCurFieldButtons();
+		UpdateOppFieldButtons();
+
+		curSelMinion = null;
+		OppSelMinion = null;
+
+		MainScreen.repaint();
+		MainScreen.revalidate();
+	}
+
+	public void UpdateHandButtons() {
+		MainScreen.currentHero.removeAll();
+		curButtons.clear();
+		for (Card c : currentHero.getHand()) {
+			JButton jb = new JButton(c.getName());
+			jb.addActionListener(this);
+			jb.setActionCommand(c.getName());
+			if (c instanceof Minion)
+				jb.setText(CardDetails((Minion) (c)));
+			else
+				jb.setText(CardDetails(c));
+			curButtons.add(jb);
+			MainScreen.currentHero.add(jb);
+		}
+	}
+
+	public void UpdateCurFieldButtons() {
+		MainScreen.currentField.removeAll();
+		curFieldMinions.clear();
+		for (Minion c : currentHero.getField()) {
+			JButton jb = new JButton();
+			jb.addActionListener(this);
+			jb.setActionCommand('C' + c.getName());
+
+			jb.setPreferredSize(
+					new Dimension(MainScreen.currentField.getWidth() / 7, MainScreen.currentField.getHeight()));
+
+			curFieldMinions.add(jb);
+
+			jb.setText(CardDetails(c));
+			MainScreen.currentField.add(jb);
+		}
+	}
+
+	public void UpdateOppFieldButtons() {
+		MainScreen.OppField.removeAll();
+		OppFieldMinions.clear();
+		for (Minion c : opponent.getField()) {
+			JButton jb = new JButton(c.getName());
+			jb.addActionListener(this);
+			jb.setActionCommand('O' + c.getName());
+
+			jb.setPreferredSize(
+					new Dimension(MainScreen.currentField.getWidth() / 7, MainScreen.currentField.getHeight()));
+			
+			jb.setText(CardDetails(c));
+
+			OppFieldMinions.add(jb);
+			MainScreen.OppField.add(jb);
+		}
+	}
+
+	String CardDetails(Minion c) {
+		String CardText = "";
+
+		CardText = c.getName() + "\nMana Cost: " + c.getManaCost() + "\nRarity: " + c.getRarity() + "\nAttack: "
+				+ c.getAttack() + "\nCurrent HP: " + c.getCurrentHP() + "\\" + c.getMaxHP() + "\n Taunt: " + c.isTaunt()
+				+ "\n Divine: " + c.isDivine() + "\n Charge: " + !c.isSleeping() + "\n Attacked: " + c.isAttacked();
+
+		CardText = "<html>" + CardText.replaceAll("\\n", "<br>") + "</html>";
+
+		return CardText;
+	}
+
+	String CardDetails(Card card) {
+		String CardText = "";
+
+		CardText = card.getName() + "\nMana Cost: " + card.getManaCost() + "\nRarity: " + card.getRarity();
+		CardText = "<html>" + CardText.replaceAll("\\n", "<br>") + "</html>";
+
+		return CardText;
+	}
+
+	public void UpdateCurrentHeroStatus() {
+		String s = "";
+		s += "Name: " + currentHero.getName() + '\n';
+		s += "Current HP: " + currentHero.getCurrentHP() + '\n';
+		s += "Mana Crystals: " + currentHero.getCurrentManaCrystals() + "\\" + getCurrentHero().getTotalManaCrystals()
+				+ "\n";
+		s += "Remaining Deck Size: " + currentHero.getDeck().size() + '\n';
+
+		MainScreen.curStatus.setText(s);
+	}
+
+	public void UpdateCurrentOpponentStatus() {
+		String s = "";
+		s += "Name: " + opponent.getName() + '\n';
+		s += "Current HP: " + opponent.getCurrentHP() + '\n';
+		s += "Mana Crystals: " + opponent.getCurrentManaCrystals() + "\\" + opponent.getTotalManaCrystals() + "\n";
+		s += "Remaining Deck Size: " + opponent.getDeck().size() + '\n';
+
+		MainScreen.OppStatus.setText(s);
+	}
+
 	public Hero getOpponent() {
 		return opponent;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		JButton defaultButton = new JButton();
+		selected = (JButton) e.getSource();
+		if (e.getActionCommand() == "Use Hero Power")
+			try {
+				currentHero.useHeroPower();
+				UpdateAll();
+			} catch (NotEnoughManaException | HeroPowerAlreadyUsedException | NotYourTurnException | FullHandException
+					| FullFieldException | CloneNotSupportedException e1) {
+				e1.printStackTrace();
+				UpdateAll();
+			}
+		else if (e.getActionCommand() == "End Turn")
+			try {
+				currentHero.endTurn();
+				UpdateAll();
+			} catch (FullHandException | CloneNotSupportedException e1) {
+				e1.printStackTrace();
+				UpdateAll();
+			}
+		else if (selected != null) {
+
+			if (curButtons.contains(selected)) {
+				int i = curButtons.indexOf(selected);
+				if (currentHero.getHand().get(i) instanceof Minion) {
+					try {
+						currentHero.playMinion((Minion) currentHero.getHand().get(i));
+					} catch (NotYourTurnException | NotEnoughManaException | FullFieldException e1) {
+						e1.printStackTrace();
+						UpdateAll();
+					}
+					MainScreen.currentHero.remove(selected);
+				}
+
+				else if (currentHero.getHand().get(i) instanceof Spell) {
+					// TODO Cast Spell for the GUI
+
+				}
+				UpdateAll();
+			}
+			if (selected.getActionCommand().charAt(0) == 'C') {
+				if (selected == curMinion) {
+					selected.setBackground(defaultButton.getBackground());
+					curMinion = null;
+					curSelMinion = null;
+				} else {
+					if (curMinion != null)
+						curMinion.setBackground(defaultButton.getBackground());
+					curMinion = selected;
+					if (curFieldMinions.contains(curMinion)) {
+						int j = curFieldMinions.indexOf(curMinion);
+
+						curSelMinion = currentHero.getField().get(j);
+
+						if (OppSelMinion != null)
+							try {
+								currentHero.attackWithMinion(curSelMinion, OppSelMinion);
+								UpdateAll();
+							} catch (CannotAttackException | NotYourTurnException | TauntBypassException
+									| InvalidTargetException | NotSummonedException e1) {
+								UpdateAll();
+								e1.printStackTrace();
+							}
+
+						curMinion.setBackground(Color.GREEN);
+					}
+
+				}
+			} else if (selected.getActionCommand().charAt(0) == 'O') {
+
+				if (selected == oppMinion) {
+					selected.setBackground(defaultButton.getBackground());
+					oppMinion = null;
+					OppSelMinion = null;
+				} else {
+					if (oppMinion != null)
+						oppMinion.setBackground(defaultButton.getBackground());
+
+					oppMinion = selected;
+
+					if (OppFieldMinions.contains(oppMinion)) {
+
+						int j = OppFieldMinions.indexOf(oppMinion);
+
+						OppSelMinion = opponent.getField().get(j);
+
+						if (curSelMinion != null)
+							try {
+								currentHero.attackWithMinion(curSelMinion, OppSelMinion);
+								UpdateAll();
+
+							} catch (CannotAttackException | NotYourTurnException | TauntBypassException
+									| InvalidTargetException | NotSummonedException e1) {
+								UpdateAll();
+
+								e1.printStackTrace();
+							}
+
+						oppMinion.setBackground(Color.RED);
+					}
+
+				}
+			}
+		}
+
 	}
 
 }
