@@ -38,8 +38,9 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//Setting Up Dimensions
-		setBounds(100, 100, 1366, 768);
-
+		setBounds(0, 0, 1366, 768);
+		setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		//setUndecorated(true);
 		PanelHeight = (int) (getHeight() * 0.25f);
 		PanelWidth = (int) (getWidth());
 

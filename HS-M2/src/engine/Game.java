@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import exceptions.CannotAttackException;
 import exceptions.FullFieldException;
@@ -22,7 +23,10 @@ import exceptions.NotYourTurnException;
 import exceptions.TauntBypassException;
 import model.cards.Card;
 import model.cards.minions.Minion;
+import model.cards.spells.AOESpell;
 import model.cards.spells.FieldSpell;
+import model.cards.spells.HeroTargetSpell;
+import model.cards.spells.MinionTargetSpell;
 import model.cards.spells.Spell;
 import model.heroes.Hero;
 import model.heroes.HeroListener;
@@ -36,6 +40,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 	private Hero currentHero;
 	private Hero opponent;
 	private static Hero P1,P2;
+	private static String S1,S2;
 	public static MainWindow MainScreen = new MainWindow();
 
 	private ArrayList<JButton> curButtons = new ArrayList<JButton>();
@@ -49,7 +54,8 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 
 	JButton oppMinion = new JButton();
 	Minion OppSelMinion = null;
-
+	JButton OppButton=new JButton();
+	Hero oppSelHero=null;
 	private GameListener listener;
 
 	public Game(Hero p1, Hero p2) throws FullHandException, CloneNotSupportedException {
@@ -188,10 +194,11 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 		JLabel CardsLeft = new JLabel("There are " + g.opponent.getHand().size() + " Cards in The Opponent's Hand");
 		
 		CardsLeft.setFont(new Font("Serif", Font.PLAIN, MainScreen.getWidth() / 25));
-		JButton OpponentButton = new JButton();
-		
+		JButton OpponentButton=new JButton("Opponent");
+		OpponentButton.setFont(new Font("Courier New", Font.PLAIN, 30));
+		OpponentButton.setActionCommand("opponent");
+		OpponentButton.addActionListener(g);
 		MainScreen.opponent.add(OpponentButton);
-		
 		g.AddTwoButtons();
 		g.UpdateAll();
 		MainScreen.repaint();
@@ -216,7 +223,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 
 		curSelMinion = null;
 		OppSelMinion = null;
-
+		oppSelHero=null;
 		MainScreen.repaint();
 		MainScreen.revalidate();
 	}
@@ -224,10 +231,12 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 	public void UpdateHandButtons() {
 		MainScreen.currentHero.removeAll();
 		curButtons.clear();
+		
 		for (Card c : currentHero.getHand()) {
 			JButton jb = new JButton(c.getName());
 			jb.addActionListener(this);
 			jb.setActionCommand(c.getName());
+			
 			if (c instanceof Minion)
 				jb.setText(CardDetails((Minion) (c)));
 			else
@@ -296,6 +305,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 
 	public void UpdateCurrentHeroStatus() {
 		String s = "";
+		s+="Player "+(currentHero.equals(firstHero)?S1:S2)+"\n";
 		s += "Name: " + currentHero.getName() + '\n';
 		s += "Current HP: " + currentHero.getCurrentHP() + '\n';
 		s += "Mana Crystals: " + currentHero.getCurrentManaCrystals() + "\\" + getCurrentHero().getTotalManaCrystals()
@@ -307,6 +317,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 
 	public void UpdateCurrentOpponentStatus() {
 		String s = "";
+		s+="Player "+(opponent.equals(firstHero)?S1:S2)+"\n";
 		s += "Name: " + opponent.getName() + '\n';
 		s += "Current HP: " + opponent.getCurrentHP() + '\n';
 		s += "Mana Crystals: " + opponent.getCurrentManaCrystals() + "\\" + opponent.getTotalManaCrystals() + "\n";
@@ -321,6 +332,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		JButton defaultButton = new JButton();
 		selected = (JButton) e.getSource();
 		if (e.getActionCommand() == "Use Hero Power")
@@ -329,7 +341,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 				UpdateAll();
 			} catch (NotEnoughManaException | HeroPowerAlreadyUsedException | NotYourTurnException | FullHandException
 					| FullFieldException | CloneNotSupportedException e1) {
-				e1.printStackTrace();
+				JOptionPane.showMessageDialog(null, e1.getMessage(),"Problem",JOptionPane.INFORMATION_MESSAGE);
 				UpdateAll();
 			}
 		else if (e.getActionCommand() == "End Turn")
@@ -337,7 +349,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 				currentHero.endTurn();
 				UpdateAll();
 			} catch (FullHandException | CloneNotSupportedException e1) {
-				e1.printStackTrace();
+				JOptionPane.showMessageDialog(null, e1.getMessage(),"Problem",JOptionPane.INFORMATION_MESSAGE);
 				UpdateAll();
 			}
 		else if (selected != null) {
@@ -349,7 +361,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 						currentHero.playMinion((Minion) currentHero.getHand().get(i));
 						//MainScreen.currentHero.remove(selected);
 					} catch (NotYourTurnException | NotEnoughManaException | FullFieldException e1) {
-						System.out.println(e1.getMessage());
+						JOptionPane.showMessageDialog(null, e1.getMessage(),"Problem",JOptionPane.INFORMATION_MESSAGE);
 						
 					}
 					
@@ -357,8 +369,35 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 				}
 
 				else if (currentHero.getHand().get(i) instanceof Spell) {
-					// TODO Cast Spell for the GUI
-
+					try {
+						Spell s=(Spell)currentHero.getHand().get(i);
+						//to cast field spell 
+						if(s.getClass().getInterfaces()[0].getName().contains("FieldSpell"))
+							currentHero.castSpell((FieldSpell)s);
+						// to cast minion target spells
+						else if(s.getClass().getInterfaces()[0].getName().contains("MinionTargetSpell")||s.getClass().getInterfaces()[0].getName().contains("LeechingSpell")) {
+							Minion m;
+							if(curSelMinion!=null)
+								m=curSelMinion;
+							else
+								if(OppSelMinion!=null)
+									m=OppSelMinion;
+								else
+									throw new Exception("Please first Choose A minion then cast the spell");
+							currentHero.castSpell((MinionTargetSpell)s,m);
+							
+						}
+						else if(s.getClass().getInterfaces()[0].getName().contains("AOESpell"))
+							currentHero.castSpell((AOESpell)s, opponent.getField());
+						else if(s.getClass().getInterfaces()[0].getName().contains("HeroTargetSpell"))
+							currentHero.castSpell((HeroTargetSpell)s, opponent);
+						
+							
+						
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage(),"Problem",JOptionPane.INFORMATION_MESSAGE);
+					}
+					UpdateAll();
 				}
 				UpdateAll();
 			}
@@ -383,9 +422,9 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 							} catch (CannotAttackException | NotYourTurnException | TauntBypassException
 									| InvalidTargetException | NotSummonedException e1) {
 								UpdateAll();
-								e1.printStackTrace();
+								JOptionPane.showMessageDialog(null, e1.getMessage(),"Problem",JOptionPane.INFORMATION_MESSAGE);
 							}
-
+						if(!curSelMinion.isSleeping()||curSelMinion.isAttacked())
 						curMinion.setBackground(Color.GREEN);
 					}
 
@@ -417,12 +456,46 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 									| InvalidTargetException | NotSummonedException e1) {
 								UpdateAll();
 
-								e1.printStackTrace();
+								JOptionPane.showMessageDialog(null, e1.getMessage(),"Problem",JOptionPane.INFORMATION_MESSAGE);
 							}
-
+						if(OppSelMinion!=null&&!(isHasTaunt(opponent)&&!OppSelMinion.isTaunt()))
 						oppMinion.setBackground(Color.RED);
 					}
 
+				}
+			}
+			else if (selected.getActionCommand().charAt(0) == 'o') {
+				
+				if (selected == OppButton) {
+					selected.setBackground(defaultButton.getBackground());
+					OppButton = null;
+					oppSelHero = null;
+				} else {
+					if (OppButton != null)
+						OppButton.setBackground(defaultButton.getBackground());
+
+					OppButton = selected;
+
+					if (curFieldMinions.contains(curMinion)) {
+
+						int j = curFieldMinions.indexOf(curMinion);
+
+						curSelMinion = currentHero.getField().get(j);
+
+						if (OppButton != null)
+							try {
+								currentHero.attackWithMinion(curSelMinion, opponent);
+								
+								
+								UpdateAll();
+
+							} catch (CannotAttackException | NotYourTurnException | TauntBypassException
+									| InvalidTargetException | NotSummonedException e1) {
+								UpdateAll();
+
+								JOptionPane.showMessageDialog(null, e1.getMessage(),"Problem",JOptionPane.INFORMATION_MESSAGE);
+							}
+					}
 				}
 			}
 		}
@@ -455,6 +528,40 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 	 */
 	public static void setP1(Hero p1) {
 		P1 = p1;
+	}
+	public static boolean isHasTaunt(Hero h) {
+		for(Minion m:h.getField()) 
+			if(m.isTaunt())
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return the s2
+	 */
+	public static String getS2() {
+		return S2;
+	}
+
+	/**
+	 * @param s2 the s2 to set
+	 */
+	public static void setS2(String s2) {
+		S2 = s2;
+	}
+
+	/**
+	 * @return the s1
+	 */
+	public static String getS1() {
+		return S1;
+	}
+
+	/**
+	 * @param s1 the s1 to set
+	 */
+	public static void setS1(String s1) {
+		S1 = s1;
 	}
 
 }

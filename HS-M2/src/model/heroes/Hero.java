@@ -133,7 +133,7 @@ public abstract class Hero implements MinionListener {
 		validator.validateTurn(this);
 		validator.validateUsingHeroPower(this);
 		currentManaCrystals -= 2;
-		System.out.println("Hero Power USED!");
+	//	System.out.println("Hero Power USED!");
 		heroPowerUsed = true;
 	}
 

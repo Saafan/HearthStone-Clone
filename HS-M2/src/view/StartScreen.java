@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
@@ -33,7 +34,8 @@ public class StartScreen extends JFrame {
 		p=new JPanel();
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setBounds(500,250,300,300);
+		setBounds(500,250,300,350);
+		setResizable(false);
 		JButton B=new JButton("Start Game");
 		B.addActionListener(new ActionListener() {
 			
@@ -64,14 +66,15 @@ public class StartScreen extends JFrame {
 	}
 	public static void main(String[] args) {
 		new StartScreen();
+		
 	}
 	public void MakeMeChooseHeros() {
 		p.removeAll();
 		remove(p);
 		JPanel p1=new JPanel();
 		JPanel p2=new JPanel();
-		JLabel l1=new JLabel("Choose First Hero");
-		JLabel l2=new JLabel("Choose Second Hero");
+		JLabel l1=new JLabel("First Player ! ");
+		JLabel l2=new JLabel("Second Player ! ");
         DefaultListModel<String> L1 = new DefaultListModel<>();  
         L1.addElement("Mage");  
         L1.addElement("Hunter");  
@@ -85,13 +88,24 @@ public class StartScreen extends JFrame {
         L2.addElement("Priest");  
         L2.addElement("Warlock"); 
         L2.addElement("Paladin");
+        JTextArea T1=new JTextArea("your name please !");
+        JTextArea T2=new JTextArea("your name please !");
         JList<String> list2 = new JList<>(L2);
-        p1.setLayout(new GridLayout(2,1));
+        p1.setLayout(new GridLayout(3,1));
 		p1.add(l1);
+		JPanel p11=new JPanel();
+		p11.add(T1);
+		p1.add(p11);
 		p1.add(list);
-		p2.setLayout(new GridLayout(2,1));
+		
+		p2.setLayout(new GridLayout(3,1));
 		p2.add(l2);
+		JPanel p21=new JPanel();
+		p21.add(T2);
+		
+		p2.add(p21);
 		p2.add(list2);
+		
 		add(p1,BorderLayout.WEST);
 		add(p2,BorderLayout.EAST);
 		JButton b=new JButton("Start Game!");
@@ -102,9 +116,12 @@ public class StartScreen extends JFrame {
 				if(list.getSelectedIndex()!=-1) {
 					if(list2.getSelectedIndex()!=-1) {
 						try{
+							Game.setS1(T1.getText());
+							Game.setS2(T2.getText());
 							Game.setP1(helper(list.getSelectedIndex()));
 							Game.setP2(helper(list2.getSelectedIndex()));
 							Game.main(null);
+							dispose();
 						}catch (Exception e2) {
 							// TODO: handle exception
 							e2.printStackTrace();
