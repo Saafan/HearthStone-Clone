@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import exceptions.CannotAttackException;
 import exceptions.FullFieldException;
@@ -32,6 +34,7 @@ import model.heroes.Hero;
 import model.heroes.HeroListener;
 import model.heroes.Hunter;
 import model.heroes.Warlock;
+import view.ImageWin;
 import view.MainWindow;
 
 public class Game implements ActionValidator, HeroListener, ActionListener {
@@ -190,7 +193,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 
 		for (int i = 0; i < 8; i++)
 			g.endTurn();
-
+		g.firstHero.setCurrentHP(1);
 		JLabel CardsLeft = new JLabel("There are " + g.opponent.getHand().size() + " Cards in The Opponent's Hand");
 		
 		CardsLeft.setFont(new Font("Serif", Font.PLAIN, MainScreen.getWidth() / 25));
@@ -226,6 +229,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 		oppSelHero=null;
 		MainScreen.repaint();
 		MainScreen.revalidate();
+		endGameChecker();
 	}
 
 	public void UpdateHandButtons() {
@@ -562,6 +566,20 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 	 */
 	public static void setS1(String s1) {
 		S1 = s1;
+	}
+	public void endGameChecker() {
+		if(firstHero.getCurrentHP()==0)
+		{
+			MainScreen.dispose();
+			new ImageWin();
+			JOptionPane.showMessageDialog(null, "Congrats ....!"+S2,"Gratulation",JOptionPane.INFORMATION_MESSAGE);
+			
+		}else
+			if(secondHero.getCurrentHP()==0) {
+				MainScreen.dispose();
+				new ImageWin();
+				JOptionPane.showMessageDialog(null, "Congrats ....!"+S1,"Gratulation",JOptionPane.INFORMATION_MESSAGE);
+			}
 	}
 
 }
