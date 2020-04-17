@@ -7,6 +7,7 @@ import java.util.Collections;
 import exceptions.FullFieldException;
 import exceptions.FullHandException;
 import exceptions.HeroPowerAlreadyUsedException;
+import exceptions.InvalidTargetException;
 import exceptions.NotEnoughManaException;
 import exceptions.NotYourTurnException;
 import model.cards.Rarity;
@@ -34,25 +35,34 @@ public class Priest extends Hero {
 		getDeck().add(velen);
 		listenToMinions();
 		Collections.shuffle(getDeck());
-
 	}
 
 	public void useHeroPower(Minion m) throws NotEnoughManaException, HeroPowerAlreadyUsedException,
-			NotYourTurnException, FullHandException, CloneNotSupportedException, FullFieldException {
-		super.useHeroPower();
-		if (fieldContains("Prophet Velen"))
-			m.setCurrentHP(m.getCurrentHP() + 8);
+			NotYourTurnException, FullHandException, CloneNotSupportedException, FullFieldException, InvalidTargetException {
+		
+		if (getField().contains(m)) {
+			super.useHeroPower();
+			if (fieldContains("Prophet Velen"))
+				m.setCurrentHP(m.getCurrentHP() + 8);
+			else
+				m.setCurrentHP(m.getCurrentHP() + 2);
+		}
 		else
-			m.setCurrentHP(m.getCurrentHP() + 2);
+			throw new InvalidTargetException("Cannot Heal An Opponent Minion!");
+
 	}
 
 	public void useHeroPower(Hero h) throws NotEnoughManaException, HeroPowerAlreadyUsedException, NotYourTurnException,
-			FullHandException, CloneNotSupportedException, FullFieldException {
+			FullHandException, CloneNotSupportedException, FullFieldException, InvalidTargetException {
+		if (h == this) {
 		super.useHeroPower();
 		if (fieldContains("Prophet Velen"))
 			h.setCurrentHP(h.getCurrentHP() + 8);
 		else
 			h.setCurrentHP(h.getCurrentHP() + 2);
+		}
+		else
+			throw new InvalidTargetException("Cannot Heal The Opponent Hero!");
 	}
 
 }
