@@ -368,14 +368,21 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 
 						}
 						if (currentHero instanceof Priest) {
-							if (curSelMinion != null) {
-								((Priest) currentHero).useHeroPower(curSelMinion);
-								UpdateAll();
-							}
-
-							else {
+							int dialogButton = JOptionPane.YES_NO_OPTION;
+							int dResult=JOptionPane.showConfirmDialog(null, "Do you want to heal yourself?", "Problem",
+									dialogButton);
+							
+							if (dResult == 0) {
 								((Priest) currentHero).useHeroPower(currentHero);
 								UpdateAll();
+							} else {
+								if (curSelMinion != null) {
+									((Priest) currentHero).useHeroPower(curSelMinion);
+									UpdateAll();
+								}else
+									JOptionPane.showMessageDialog(null, "choose first a minion you want to heal", "Problem",
+											JOptionPane.INFORMATION_MESSAGE);
+
 							}
 
 						}
@@ -476,7 +483,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 								JOptionPane.showMessageDialog(null, e1.getMessage(), "Problem",
 										JOptionPane.INFORMATION_MESSAGE);
 							}
-						if(UseHeroButton != null)
+						if (UseHeroButton != null)
 							UseHeroButton.setBackground(defaultButton.getBackground());
 						curMinion.setBackground(Color.GREEN);
 					}
@@ -500,9 +507,8 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 						int j = OppFieldMinions.indexOf(oppMinion);
 
 						OppSelMinion = opponent.getField().get(j);
-						
-						if(UseHeroButton != null && currentHero instanceof Mage)
-						{
+
+						if (UseHeroButton != null && currentHero instanceof Mage) {
 							try {
 								((Mage) currentHero).useHeroPower(OppSelMinion);
 							} catch (NotEnoughManaException | HeroPowerAlreadyUsedException | NotYourTurnException
@@ -512,7 +518,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 							}
 							UpdateAll();
 						}
-							
+
 						else if (curSelMinion != null)
 							try {
 								currentHero.attackWithMinion(curSelMinion, OppSelMinion);
@@ -537,10 +543,9 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 					OppButton = null;
 					oppSelHero = null;
 				} else {
-					
+
 					try {
-						if(UseHeroButton != null)
-						{
+						if (UseHeroButton != null) {
 							((Mage) currentHero).useHeroPower(opponent);
 							UpdateAll();
 							return;
@@ -551,7 +556,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 								JOptionPane.INFORMATION_MESSAGE);
 						e1.printStackTrace();
 					}
-					
+
 					if (OppButton != null)
 						OppButton.setBackground(Color.GRAY);
 
@@ -562,7 +567,7 @@ public class Game implements ActionValidator, HeroListener, ActionListener {
 						int j = curFieldMinions.indexOf(curMinion);
 
 						curSelMinion = currentHero.getField().get(j);
-						
+
 						if (OppButton != null)
 							try {
 								currentHero.attackWithMinion(curSelMinion, opponent);
