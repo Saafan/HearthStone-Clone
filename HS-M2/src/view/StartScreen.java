@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import controller.Controller;
 import engine.Game;
 import exceptions.FullHandException;
 import model.heroes.Hero;
@@ -116,11 +117,11 @@ public class StartScreen extends JFrame {
 				if(list.getSelectedIndex()!=-1) {
 					if(list2.getSelectedIndex()!=-1) {
 						try{
-							Game.setS1(T1.getText());
-							Game.setS2(T2.getText());
-							Game.setP1(helper(list.getSelectedIndex()));
-							Game.setP2(helper(list2.getSelectedIndex()));
-							Game.main(null);
+							Controller.setS1(T1.getText());
+							Controller.setS2(T2.getText());
+							Controller.setP1(helper(list.getSelectedIndex()));
+							Controller.setP2(helper(list2.getSelectedIndex()));
+							Controller.main(null);
 							dispose();
 						}catch (Exception e2) {
 							// TODO: handle exception

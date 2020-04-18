@@ -22,7 +22,7 @@ public class MainWindow extends JFrame {
 
 	// CurrentHero Variables
 	public JPanel BottomPanel = new JPanel();
-	public JPanel currentHero = new JPanel();
+	public JPanel currentHeroHand = new JPanel();
 	public JPanel currentField = new JPanel();
 	public JPanel CHDeck = new JPanel();
 	public JPanel TwoButtons = new JPanel();
@@ -30,7 +30,7 @@ public class MainWindow extends JFrame {
 
 	// Opponent Variables
 	public JPanel TopPanel = new JPanel();
-	public JPanel opponent = new JPanel();
+	public JPanel opponentHand = new JPanel();
 	public JPanel OppField = new JPanel();
 	public JPanel OPDeck = new JPanel();
 	public JTextArea OppStatus = new JTextArea();
@@ -55,8 +55,8 @@ public class MainWindow extends JFrame {
 		TopPanel.setPreferredSize(Panels);
 
 		Dimension Hands = new Dimension(HandWidth, HandHeight);
-		opponent.setPreferredSize(Hands);
-		currentHero.setPreferredSize(Hands);
+		opponentHand.setPreferredSize(Hands);
+		currentHeroHand.setPreferredSize(Hands);
 
 		Dimension Decks = new Dimension(DeckWidth, DeckHeight);
 		CHDeck.setPreferredSize(Decks);
@@ -74,8 +74,8 @@ public class MainWindow extends JFrame {
 		BottomPanel.setLayout(new BorderLayout());
 		add(BottomPanel, BorderLayout.SOUTH);
 
-		currentHero.setBackground(Color.BLUE);
-		BottomPanel.add(currentHero, BorderLayout.WEST);
+		currentHeroHand.setBackground(Color.BLUE);
+		BottomPanel.add(currentHeroHand, BorderLayout.WEST);
 
 		// Setting The Deck
 		BottomPanel.add(CHDeck, BorderLayout.EAST);
@@ -101,7 +101,7 @@ public class MainWindow extends JFrame {
 		CHDeck.add(curStatus, BorderLayout.SOUTH);
 
 		// Setting GridLayout
-		currentHero.setLayout(new GridLayout(1, 1));
+		currentHeroHand.setLayout(new GridLayout(1, 1));
 		
 		//Setting the UseHeroPower and EndTurn Buttons
 		TwoButtons.setLayout(new FlowLayout());
@@ -114,11 +114,11 @@ public class MainWindow extends JFrame {
 		// Setting up the opponent Panel
 		TopPanel.setLayout(new BorderLayout());
 		add(TopPanel, BorderLayout.NORTH);
-		opponent.setBackground(Color.RED);
-		TopPanel.add(opponent, BorderLayout.WEST);
+		opponentHand.setBackground(Color.RED);
+		TopPanel.add(opponentHand, BorderLayout.WEST);
 		
 		//Setting Opponent Layout
-		opponent.setLayout(new BorderLayout());
+		opponentHand.setLayout(new BorderLayout());
 		
 		// Setting The Deck
 		TopPanel.add(OPDeck, BorderLayout.EAST);
