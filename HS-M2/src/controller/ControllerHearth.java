@@ -1,7 +1,9 @@
 package controller;
 
 import java.awt.Color;
+
 import java.awt.Dimension;
+
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,40 +35,46 @@ import model.cards.spells.Spell;
 import model.heroes.Hero;
 import model.heroes.Mage;
 import model.heroes.Priest;
-import view.ImageWin;
-import view.MainWindow;
 
-public class Controller implements GameListener, ActionListener {
-	
+import view.MainWindow;
+import view.StartListener;
+
+
+public class ControllerHearth implements GameListener, ActionListener, StartListener {
+	private static ControllerHearth cH=new ControllerHearth();
 	private static Hero P1;
 	private static Hero P2;
 	private static String S1, S2;
-	public static MainWindow MainScreen = new MainWindow();
+	public MainWindow MainScreen ;
 
 	private static ArrayList<JButton> curButtons = new ArrayList<JButton>();
 	private static ArrayList<JButton> curFieldMinions = new ArrayList<JButton>();
 	private static ArrayList<JButton> OppFieldMinions = new ArrayList<JButton>();
 
-	static JButton selected = new JButton();
-	static JButton UseHeroButton = new JButton();
+	 JButton selected = new JButton();
+	 JButton UseHeroButton = new JButton();
 
-	static JButton curMinion = new JButton();
-	static Minion curSelMinion = null;
+	 JButton curMinion = new JButton();
+	 Minion curSelMinion = null;
 
-	static JButton oppMinion = new JButton();
-	static Minion OppSelMinion = null;
-	static JButton OppButton = new JButton();
-	static Hero oppSelHero = null;
+	 JButton oppMinion = new JButton();
+	 Minion OppSelMinion = null;
+	 JButton OppButton = new JButton();
+	 Hero oppSelHero = null;
 	
-	static Game g;
-	static Controller cont = new Controller();
+	 Game g;
+
 	
-	public static void UpdatingMainScreen() throws FullHandException, CloneNotSupportedException, IOException {
-
-		 g = new Game(P1, P2);
-
+	public static void main(String[] args) throws FullHandException, CloneNotSupportedException, IOException {
+		
+		
+	}
+	public  void UpdatingMainScreen() throws FullHandException, CloneNotSupportedException, IOException {
+		MainScreen =new MainWindow();
+		 g = new Game(new Mage(), new Mage());
 		 
 		 
+		g.setListener(this);
 		for (int i = 0; i < 8; i++)
 			g.endTurn();
 		g.getCurrentHero().setCurrentHP(1);
@@ -76,25 +84,26 @@ public class Controller implements GameListener, ActionListener {
 		JButton OpponentButton = new JButton("Opponent");
 		OpponentButton.setFont(new Font("Courier New", Font.PLAIN, 30));
 		OpponentButton.setActionCommand("opponent");
-		OpponentButton.addActionListener(cont);
+		OpponentButton.addActionListener(this);
 		MainScreen.opponentHand.add(OpponentButton);
 		UpdateAll();
 		MainScreen.repaint();
 		MainScreen.revalidate();
-	}
+		
+		}
 
-	public static void AddTwoButtons() {
+	public  void AddTwoButtons() {
 
 		JButton UseHeroPower = new JButton("Use Hero Power");
 		JButton EndTurn = new JButton("End Turn");
-		UseHeroPower.addActionListener(cont);
-		EndTurn.addActionListener(cont);
+		UseHeroPower.addActionListener(this);
+		EndTurn.addActionListener(this);
 		MainScreen.TwoButtons.removeAll();
 		MainScreen.TwoButtons.add(UseHeroPower);
 		MainScreen.TwoButtons.add(EndTurn);
 	}
 
-	public static void UpdateAll() {
+	public  void UpdateAll() {
 		UpdateCurrentHeroStatus();
 		UpdateCurrentOpponentStatus();
 		UpdateHandButtons();
@@ -108,16 +117,16 @@ public class Controller implements GameListener, ActionListener {
 		UseHeroButton = null;
 		MainScreen.repaint();
 		MainScreen.revalidate();
-		endGameChecker();
+		onGameOver();
 	}
 
-	public static void UpdateHandButtons() {
+	public  void UpdateHandButtons() {
 		MainScreen.currentHeroHand.removeAll();
 		curButtons.clear();
 
 		for (Card c : g.getCurrentHero().getHand()) {
 			JButton jb = new JButton(c.getName());
-			jb.addActionListener(cont);
+			jb.addActionListener(this);
 			jb.setActionCommand(c.getName());
 
 			if (c instanceof Minion)
@@ -129,12 +138,12 @@ public class Controller implements GameListener, ActionListener {
 		}
 	}
 
-	public static void UpdateCurFieldButtons() {
+	public  void UpdateCurFieldButtons() {
 		MainScreen.currentField.removeAll();
 		curFieldMinions.clear();
 		for (Minion c : g.getCurrentHero().getField()) {
 			JButton jb = new JButton();
-			jb.addActionListener(cont);
+			jb.addActionListener(this);
 			jb.setActionCommand('C' + c.getName());
 
 			jb.setPreferredSize(
@@ -147,12 +156,12 @@ public class Controller implements GameListener, ActionListener {
 		}
 	}
 
-	public static void UpdateOppFieldButtons() {
+	public  void UpdateOppFieldButtons() {
 		MainScreen.OppField.removeAll();
 		OppFieldMinions.clear();
 		for (Minion c : g.getOpponent().getField()) {
 			JButton jb = new JButton(c.getName());
-			jb.addActionListener(cont);
+			jb.addActionListener(this);
 			jb.setActionCommand('O' + c.getName());
 
 			jb.setPreferredSize(
@@ -186,7 +195,7 @@ public class Controller implements GameListener, ActionListener {
 		return CardText;
 	}
 
-	public static void UpdateCurrentHeroStatus() {
+	public  void UpdateCurrentHeroStatus() {
 		String s = "";
 		s += "Player " + (g.getCurrentHero().equals(g.getFirstHero()) ? S1 : S2) + "\n";
 		s += "Name: " + g.getCurrentHero().getName() + '\n';
@@ -198,7 +207,7 @@ public class Controller implements GameListener, ActionListener {
 		MainScreen.curStatus.setText(s);
 	}
 
-	public static void UpdateCurrentOpponentStatus() {
+	public  void UpdateCurrentOpponentStatus() {
 		String s = "";
 		s += "Player " + (g.getOpponent().equals(g.getFirstHero()) ? S1 : S2) + "\n";
 		s += "Name: " + g.getOpponent().getName() + '\n';
@@ -458,24 +467,24 @@ public class Controller implements GameListener, ActionListener {
 
 	@Override
 	public void onGameOver() {
-		// TODO Auto-generated method stub
+		endGameChecker();
 		
 	}
 	
 
-	public static void main(String[] args) {
-		Controller c = new Controller();
+	
+
+	/**
+	 * @return the p2
+	 */
+	public  void StartGame(Hero h1,String P1,Hero h2,String P2 ) {
 		try {
-			c.UpdatingMainScreen();
+			UpdatingMainScreen();
 		} catch (FullHandException | CloneNotSupportedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * @return the p2
-	 */
 	public static Hero getP2() {
 		return P2;
 	}
@@ -536,16 +545,41 @@ public class Controller implements GameListener, ActionListener {
 		S1 = s1;
 	}
 
-	public static void endGameChecker() {
+	public void endGameChecker() {
 		if (g.getFirstHero().getCurrentHP() == 0) {
 			MainScreen.dispose();
-			new ImageWin();
+			//new ImageWin();
 			JOptionPane.showMessageDialog(null, "Congrats ....!" + S2, "Gratulation", JOptionPane.INFORMATION_MESSAGE);
 
 		} else if (g.getSecondHero().getCurrentHP() == 0) {
 			MainScreen.dispose();
-			new ImageWin();
+		//	new ImageWin();
 			JOptionPane.showMessageDialog(null, "Congrats ....!" + S1, "Gratulation", JOptionPane.INFORMATION_MESSAGE);
 		}
+	}
+	public void onStart(Hero hero1,String name1,Hero hero2,String name2) {
+		P1=hero1;
+		P2=hero2;
+		S1=name1;
+		S2=name2;
+		
+		try {
+			UpdatingMainScreen();
+		} catch (FullHandException | CloneNotSupportedException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * @return the cH
+	 */
+	public static ControllerHearth getcH() {
+		return cH;
+	}
+	/**
+	 * @param cH the cH to set
+	 */
+	public static void setcH(ControllerHearth cH) {
+		ControllerHearth.cH = cH;
 	}
 }

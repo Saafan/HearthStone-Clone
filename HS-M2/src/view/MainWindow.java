@@ -14,7 +14,7 @@ import model.cards.Card;
 import model.cards.minions.Minion;
 
 public class MainWindow extends JFrame {
-
+	ImageIcon i=new ImageIcon(getClass().getResource("icons8-hearthstone-64.png")) ;
 	// consts
 	int PanelWidth, PanelHeight = 0;
 	int HandWidth, HandHeight = 0;
@@ -67,7 +67,8 @@ public class MainWindow extends JFrame {
 		Dimension Status = new Dimension(DeckWidth, (int) (DeckHeight * 0.5f));
 		curStatus.setPreferredSize(Status);
 		OppStatus.setPreferredSize(Status);
-		
+		curStatus.setEditable(false);
+		OppStatus.setEditable(false);
 		//----------------------------------------------------------------------------------------
 		
 		// Setting up the current Hero Panel
@@ -127,10 +128,12 @@ public class MainWindow extends JFrame {
 		// Setting Text
 		OPDeck.setLayout(new BorderLayout());
 		OPDeck.add(OppStatus, BorderLayout.CENTER);
-
+		setVisible(true);
+		setIconImage(i.getImage());
+		setTitle("HearthStone");
 		repaint();
 		revalidate();
-		setVisible(true);
+		
 	}
 }
 
