@@ -201,35 +201,11 @@ public class StartScreen extends JFrame {
 	
 		
 	
-		JLabel b=new JLabel(i);
-		b.addMouseListener(new MouseListener() {
+		JButton b=new JButton();
+		b.addActionListener(new ActionListener() {
 			
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				if(!T1.getText().equals("your name please !"))
 					if(!T2.getText().equals("your name please !"))
 					{
@@ -269,6 +245,7 @@ public class StartScreen extends JFrame {
 			}
 		
 		
+				
 			
 		});
 		l1.setBounds(20,20,80,40);
