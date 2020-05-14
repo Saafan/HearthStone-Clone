@@ -5,10 +5,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+
 
 import model.cards.Card;
 import model.cards.minions.Minion;
@@ -38,7 +40,8 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//Setting Up Dimensions
-		setBounds(0, 0, 1366, 768);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		setBounds(0, 0, screenSize.width, screenSize.height);
 		setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		//setUndecorated(true);
 		PanelHeight = (int) (getHeight() * 0.25f);

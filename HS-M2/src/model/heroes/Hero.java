@@ -224,7 +224,7 @@ public abstract class Hero implements MinionListener {
 		if (deck.size() == 0)
 			fatigueDamage = 1;
 		if (hand.size() == 10)
-			throw new FullHandException("My hand is too full !!!", c);
+			throw new FullHandException("My hand is too full.\nA card have been burned!\nBurned Card Name: " + c.getName() + "\nBurned Card Mana Cost: " + c.getManaCost() + "\nBurned Card Rarity: " + c.getRarity(), c);
 		hand.add(c);
 		if (fieldContains("Chromaggus") && hand.size() < 10)
 			hand.add(c.clone());

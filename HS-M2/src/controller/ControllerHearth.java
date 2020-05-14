@@ -39,46 +39,41 @@ import model.heroes.Priest;
 import view.MainWindow;
 import view.StartListener;
 
-
 public class ControllerHearth implements GameListener, ActionListener, StartListener {
-	private static ControllerHearth cH=new ControllerHearth();
+	private static ControllerHearth cH = new ControllerHearth();
 	private static Hero P1;
 	private static Hero P2;
 	private static String S1, S2;
-	public MainWindow MainScreen ;
+	public MainWindow MainScreen;
 
 	private static ArrayList<JButton> curButtons = new ArrayList<JButton>();
 	private static ArrayList<JButton> curFieldMinions = new ArrayList<JButton>();
 	private static ArrayList<JButton> OppFieldMinions = new ArrayList<JButton>();
 
-	 JButton selected = new JButton();
-	 JButton UseHeroButton = new JButton();
+	JButton selected = new JButton();
+	JButton UseHeroButton = new JButton();
 
-	 JButton curMinion = new JButton();
-	 Minion curSelMinion = null;
+	JButton curMinion = new JButton();
+	Minion curSelMinion = null;
 
-	 JButton oppMinion = new JButton();
-	 Minion OppSelMinion = null;
-	 JButton OppButton = new JButton();
-	 Hero oppSelHero = null;
-	
-	 Game g;
+	JButton oppMinion = new JButton();
+	Minion OppSelMinion = null;
+	JButton OppButton = new JButton();
+	Hero oppSelHero = null;
 
-	
+	Game g;
+
 	public static void main(String[] args) throws FullHandException, CloneNotSupportedException, IOException {
-		
-		
+
 	}
-	public  void UpdatingMainScreen() throws FullHandException, CloneNotSupportedException, IOException {
-		MainScreen =new MainWindow();
-		 g = new Game(new Mage(), new Mage());
-		 
-		 
+
+	public void UpdatingMainScreen() throws FullHandException, CloneNotSupportedException, IOException {
+		MainScreen = new MainWindow();
+		g = new Game(new Mage(), new Mage());
+
 		g.setListener(this);
-		for (int i = 0; i < 8; i++)
-			g.endTurn();
-		g.getCurrentHero().setCurrentHP(1);
-		JLabel CardsLeft = new JLabel("There are " + g.getOpponent().getHand().size() + " Cards in The Opponent's Hand");
+		JLabel CardsLeft = new JLabel(
+				"There are " + g.getOpponent().getHand().size() + " Cards in The Opponent's Hand");
 
 		CardsLeft.setFont(new Font("Serif", Font.PLAIN, MainScreen.getWidth() / 25));
 		JButton OpponentButton = new JButton("Opponent");
@@ -89,10 +84,10 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 		UpdateAll();
 		MainScreen.repaint();
 		MainScreen.revalidate();
-		
-		}
 
-	public  void AddTwoButtons() {
+	}
+
+	public void AddTwoButtons() {
 
 		JButton UseHeroPower = new JButton("Use Hero Power");
 		JButton EndTurn = new JButton("End Turn");
@@ -103,7 +98,7 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 		MainScreen.TwoButtons.add(EndTurn);
 	}
 
-	public  void UpdateAll() {
+	public void UpdateAll() {
 		UpdateCurrentHeroStatus();
 		UpdateCurrentOpponentStatus();
 		UpdateHandButtons();
@@ -120,7 +115,7 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 		onGameOver();
 	}
 
-	public  void UpdateHandButtons() {
+	public void UpdateHandButtons() {
 		MainScreen.currentHeroHand.removeAll();
 		curButtons.clear();
 
@@ -138,7 +133,7 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 		}
 	}
 
-	public  void UpdateCurFieldButtons() {
+	public void UpdateCurFieldButtons() {
 		MainScreen.currentField.removeAll();
 		curFieldMinions.clear();
 		for (Minion c : g.getCurrentHero().getField()) {
@@ -156,7 +151,7 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 		}
 	}
 
-	public  void UpdateOppFieldButtons() {
+	public void UpdateOppFieldButtons() {
 		MainScreen.OppField.removeAll();
 		OppFieldMinions.clear();
 		for (Minion c : g.getOpponent().getField()) {
@@ -195,29 +190,30 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 		return CardText;
 	}
 
-	public  void UpdateCurrentHeroStatus() {
+	public void UpdateCurrentHeroStatus() {
 		String s = "";
 		s += "Player " + (g.getCurrentHero().equals(g.getFirstHero()) ? S1 : S2) + "\n";
 		s += "Name: " + g.getCurrentHero().getName() + '\n';
 		s += "Current HP: " + g.getCurrentHero().getCurrentHP() + '\n';
-		s += "Mana Crystals: " + g.getCurrentHero().getCurrentManaCrystals() + "\\" + g.getCurrentHero().getTotalManaCrystals()
-				+ "\n";
+		s += "Mana Crystals: " + g.getCurrentHero().getCurrentManaCrystals() + "\\"
+				+ g.getCurrentHero().getTotalManaCrystals() + "\n";
 		s += "Remaining Deck Size: " + g.getCurrentHero().getDeck().size() + '\n';
 
 		MainScreen.curStatus.setText(s);
 	}
 
-	public  void UpdateCurrentOpponentStatus() {
+	public void UpdateCurrentOpponentStatus() {
 		String s = "";
 		s += "Player " + (g.getOpponent().equals(g.getFirstHero()) ? S1 : S2) + "\n";
 		s += "Name: " + g.getOpponent().getName() + '\n';
 		s += "Current HP: " + g.getOpponent().getCurrentHP() + '\n';
-		s += "Mana Crystals: " + g.getOpponent().getCurrentManaCrystals() + "\\" + g.getOpponent().getTotalManaCrystals() + "\n";
+		s += "Mana Crystals: " + g.getOpponent().getCurrentManaCrystals() + "\\"
+				+ g.getOpponent().getTotalManaCrystals() + "\n";
 		s += "Remaining Deck Size: " + g.getOpponent().getDeck().size() + '\n';
 
 		MainScreen.OppStatus.setText(s);
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 
 		JButton defaultButton = new JButton();
@@ -246,9 +242,9 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 						}
 						if (g.getCurrentHero() instanceof Priest) {
 							int dialogButton = JOptionPane.YES_NO_OPTION;
-							int dResult=JOptionPane.showConfirmDialog(null, "Do you want to heal yourself?", "Problem",
-									dialogButton);
-							
+							int dResult = JOptionPane.showConfirmDialog(null, "Do you want to heal yourself?",
+									"Problem", dialogButton);
+
 							if (dResult == 0) {
 								((Priest) g.getCurrentHero()).useHeroPower(g.getCurrentHero());
 								UpdateAll();
@@ -256,9 +252,9 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 								if (curSelMinion != null) {
 									((Priest) g.getCurrentHero()).useHeroPower(curSelMinion);
 									UpdateAll();
-								}else
-									JOptionPane.showMessageDialog(null, "choose first a minion you want to heal", "Problem",
-											JOptionPane.INFORMATION_MESSAGE);
+								} else
+									JOptionPane.showMessageDialog(null, "choose first a minion you want to heal",
+											"Problem", JOptionPane.INFORMATION_MESSAGE);
 
 							}
 
@@ -468,16 +464,13 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 	@Override
 	public void onGameOver() {
 		endGameChecker();
-		
-	}
-	
 
-	
+	}
 
 	/**
 	 * @return the p2
 	 */
-	public  void StartGame(Hero h1,String P1,Hero h2,String P2 ) {
+	public void StartGame(Hero h1, String P1, Hero h2, String P2) {
 		try {
 			UpdatingMainScreen();
 		} catch (FullHandException | CloneNotSupportedException | IOException e) {
@@ -485,6 +478,7 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 			e.printStackTrace();
 		}
 	}
+
 	public static Hero getP2() {
 		return P2;
 	}
@@ -548,21 +542,22 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 	public void endGameChecker() {
 		if (g.getFirstHero().getCurrentHP() == 0) {
 			MainScreen.dispose();
-			//new ImageWin();
+			// new ImageWin();
 			JOptionPane.showMessageDialog(null, "Congrats ....!" + S2, "Gratulation", JOptionPane.INFORMATION_MESSAGE);
 
 		} else if (g.getSecondHero().getCurrentHP() == 0) {
 			MainScreen.dispose();
-		//	new ImageWin();
+			// new ImageWin();
 			JOptionPane.showMessageDialog(null, "Congrats ....!" + S1, "Gratulation", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
-	public void onStart(Hero hero1,String name1,Hero hero2,String name2) {
-		P1=hero1;
-		P2=hero2;
-		S1=name1;
-		S2=name2;
-		
+
+	public void onStart(Hero hero1, String name1, Hero hero2, String name2) {
+		P1 = hero1;
+		P2 = hero2;
+		S1 = name1;
+		S2 = name2;
+
 		try {
 			UpdatingMainScreen();
 		} catch (FullHandException | CloneNotSupportedException | IOException e) {
@@ -570,12 +565,14 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * @return the cH
 	 */
 	public static ControllerHearth getcH() {
 		return cH;
 	}
+
 	/**
 	 * @param cH the cH to set
 	 */
