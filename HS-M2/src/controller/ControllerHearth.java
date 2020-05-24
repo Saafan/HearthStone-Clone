@@ -40,7 +40,6 @@ import view.MainWindow;
 import view.StartListener;
 
 public class ControllerHearth implements GameListener, ActionListener, StartListener {
-	private static ControllerHearth cH = new ControllerHearth();
 	private static Hero P1;
 	private static Hero P2;
 	private static String S1, S2;
@@ -69,7 +68,7 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 
 	public void UpdatingMainScreen() throws FullHandException, CloneNotSupportedException, IOException {
 		MainScreen = new MainWindow();
-		g = new Game(new Mage(), new Mage());
+		g = new Game(P1, P2);
 
 		g.setListener(this);
 		JLabel CardsLeft = new JLabel(
@@ -197,7 +196,8 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 		s += "Current HP: " + g.getCurrentHero().getCurrentHP() + '\n';
 		s += "Mana Crystals: " + g.getCurrentHero().getCurrentManaCrystals() + "\\"
 				+ g.getCurrentHero().getTotalManaCrystals() + "\n";
-		s += "Remaining Deck Size: " + g.getCurrentHero().getDeck().size() + '\n';
+		s += "Remaining Deck Cards: " + g.getCurrentHero().getDeck().size() + '\n';
+		s += "Number of Hand Cards: " + g.getCurrentHero().getHand().size() + '\n';
 
 		MainScreen.curStatus.setText(s);
 	}
@@ -303,6 +303,23 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 				else if (g.getCurrentHero().getHand().get(i) instanceof Spell) {
 					try {
 						Spell s = (Spell) g.getCurrentHero().getHand().get(i);
+
+						if (s.getClass().getInterfaces().length > 1) {
+							if (curSelMinion == null && OppSelMinion == null) {
+								
+								g.getCurrentHero().castSpell((HeroTargetSpell) s, g.getOpponent());
+								
+							} else {
+								// make effect on Minion
+								Minion m;
+								if (curSelMinion != null)
+									m = curSelMinion;
+								else
+									m = OppSelMinion;
+								g.getCurrentHero().castSpell((MinionTargetSpell) s, m);
+							}
+						} else
+
 						// to cast field spell
 						if (s.getClass().getInterfaces()[0].getName().contains("FieldSpell"))
 							g.getCurrentHero().castSpell((FieldSpell) s);
@@ -322,7 +339,6 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 							g.getCurrentHero().castSpell((AOESpell) s, g.getOpponent().getField());
 						else if (s.getClass().getInterfaces()[0].getName().contains("HeroTargetSpell"))
 							g.getCurrentHero().castSpell((HeroTargetSpell) s, g.getOpponent());
-
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(null, e1.getMessage(), "Problem",
 								JOptionPane.INFORMATION_MESSAGE);
@@ -569,14 +585,4 @@ public class ControllerHearth implements GameListener, ActionListener, StartList
 	/**
 	 * @return the cH
 	 */
-	public static ControllerHearth getcH() {
-		return cH;
-	}
-
-	/**
-	 * @param cH the cH to set
-	 */
-	public static void setcH(ControllerHearth cH) {
-		ControllerHearth.cH = cH;
-	}
 }

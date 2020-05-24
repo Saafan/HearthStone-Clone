@@ -1,0 +1,32 @@
+HearthStone MileStone 3 Instructions\n
+	1. How to select the two heroes.\n
+		a. Run the Project from the Class Start Screen\n
+		b. Press on the HearthStone logo\n
+		c. Choose a Hero for each Player from the two Lists\n
+		d. Write the Name for each Player in the Text Fields\n
+		e. Then Press Start Game\n
+	2. How the current Hero plays a minion:\n
+		Each Button in the bottom section of the game represent a Minion in\n
+		 the Hero’s Hand, Press the Minion’s Button you want to play.\n
+	3. How the current hero casts all types of spells: \n
+		a. Hero Target Spell, AOE Spell: Will trigger automatically once the Button is pressed\n
+		b. Minion Target Spell, Leeching Spell: Will trigger automatically once a minion is selected and button pressed\n
+		c. Both Minion Target and Hero Target: If a Minion is selected the Spell will have an effect on the Minion\n
+		, otherwise it will have an effect on a Hero.\n
+	4. How the current hero uses his minions to attack the opponent’s minion:\n
+		a. Play the Minion from the hero’s Hand.\n
+		b. Click on it from the field a Green Highlight will be shown indicating that it have been selected\n
+		c. Click on the Opponent’s minion and they will attack each other\n
+		NOTE: Choosing the Opponent’s minion first and then the Current Hero Minion is valid.\n
+	5. How to end the turn:\n
+		Press on the End Turn Button on the bottom right\n
+	6. Specify the screen orientation: \n
+	     The Screen is split into two halves each Hero own a half. The Hero’s Panel is split\n
+        	into two halves a half for the hand (only for the current Hero) and the \n
+	Hero’s Status (Name, Health, Current Mana Crystals, etc.) and the other half is for the Hero’s field.\n
+	7. Any other details that might be specific to your own implementation:\n
+
+
+
+
+

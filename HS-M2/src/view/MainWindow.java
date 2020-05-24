@@ -78,7 +78,6 @@ public class MainWindow extends JFrame {
 		BottomPanel.setLayout(new BorderLayout());
 		add(BottomPanel, BorderLayout.SOUTH);
 
-		currentHeroHand.setBackground(Color.BLUE);
 		BottomPanel.add(currentHeroHand, BorderLayout.WEST);
 
 		// Setting The Deck

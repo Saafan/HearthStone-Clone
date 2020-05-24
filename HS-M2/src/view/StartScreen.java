@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -38,7 +40,10 @@ import model.heroes.Paladin;
 import model.heroes.Priest;
 import model.heroes.Warlock;
 
-public class StartScreen extends JFrame {
+import java.awt.Desktop;
+import java.io.*;
+
+public class StartScreen extends JFrame implements ActionListener {
 
 	StartListener s;
 	JPanel p;
@@ -73,10 +78,7 @@ public class StartScreen extends JFrame {
 		p.setLayout(null);
 		l.setBounds(50, 60, 200, 40);
 		B.setBounds(80, 200, 120, 30);
-		// JLabel credits=new JLabel("Created ,Designed and programmed by Sa3fan 'n
-		// Mesameh");
-		// credits.setBounds(20, 300, 200, 40);
-		// p.add(credits);
+		
 		JLabel But = new JLabel(i);
 		But.addMouseListener(new MouseListener() {
 
@@ -152,10 +154,20 @@ public class StartScreen extends JFrame {
 		L2.addElement("Priest");
 		L2.addElement("Warlock");
 		L2.addElement("Paladin");
+		
+		JButton instructions = new JButton("Instructions");
+		instructions.setActionCommand("Instructions");
+		instructions.setBounds(100, 10, 120, 40);
+		instructions.addActionListener(this);
+		p.add(instructions);
+		
+		
 		JTextField T1 = new JTextField("your name please !");
 		JList<String> list2 = new JList<>(L2);
 		T1.addFocusListener(new FocusListener() {
 
+			
+			
 			@Override
 			public void focusGained(FocusEvent e) {
 				if (T1.getText().equals("your name please !"))
@@ -191,18 +203,21 @@ public class StartScreen extends JFrame {
 		});
 
 		JButton b = new JButton("Start Game");
-		b.setPreferredSize(new Dimension(100,30));
+		b.setPreferredSize(new Dimension(100, 30));
 		b.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				
+				
 				if (!T1.getText().equals("your name please !"))
 					if (!T2.getText().equals("your name please !")) {
 						if (list.getSelectedIndex() != -1) {
 							if (list2.getSelectedIndex() != -1) {
 								try {
-
-									ControllerHearth.getcH().onStart(helper(list.getSelectedIndex()), T1.getText(),
+									ControllerHearth cH = new ControllerHearth();
+									cH.onStart(helper(list.getSelectedIndex()), T1.getText(),
 											helper(list2.getSelectedIndex()), T2.getText());
 
 									dispose();
@@ -269,5 +284,69 @@ public class StartScreen extends JFrame {
 		}
 
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		
+		if (((JButton) (e.getSource())).getActionCommand() == "Instructions") {
+			JFrame inst = new JFrame("Instructions");
+			inst.setBounds(new Rectangle(100,500, 800,500));
+			TextArea instructions = new TextArea(" HearthStone MileStone 3 Instructions\r\n" + 
+					"	1. How to select the two heroes.\r\n" + 
+					"		a. Run the Project from the Class Start Screen\r\n" + 
+					"		b. Press on the HearthStone logo\r\n" + 
+					"		c. Choose a Hero for each Player from the two Lists\r\n" + 
+					"		d. Write the Name for each Player in the Text Fields\r\n" + 
+					"		e. Then Press Start Game\r\n" + 
+					"	2. How the current Hero plays a minion:\r\n" + 
+					"		Each Button in the bottom section of the game represent a Minion in\r\n" + 
+					"		 the Hero’s Hand, Press the Minion’s Button you want to play.\r\n" + 
+					"	3. How the current hero casts all types of spells: \r\n" + 
+					"		a. Hero Target Spell, AOE Spell: Will trigger automatically once the Button is pressed\r\n" + 
+					"		b. Minion Target Spell, Leeching Spell: Will trigger automatically once a minion is selected and button pressed\r\n" + 
+					"		c. Both Minion Target and Hero Target: If a Minion is selected the Spell will have an effect on the Minion\r\n" + 
+					"		, otherwise it will have an effect on a Hero.\r\n" + 
+					"	4. How the current hero uses his minions to attack the opponent’s minion:\r\n" + 
+					"		a. Play the Minion from the hero’s Hand.\r\n" + 
+					"		b. Click on it from the field a Green Highlight will be shown indicating that it have been selected\r\n" + 
+					"		c. Click on the Opponent’s minion and they will attack each other\r\n" + 
+					"		NOTE: Choosing the Opponent’s minion first and then the Current Hero Minion is valid.\r\n" + 
+					"	5. How to end the turn:\r\n" + 
+					"		Press on the End Turn Button on the bottom right\r\n" + 
+					"	6. Specify the screen orientation: \r\n" + 
+					"	     The Screen is split into two halves each Hero own a half. The Hero’s Panel is split\r\n" + 
+					"        	into two halves a half for the hand (only for the current Hero) and the \r\n" + 
+					"	Hero’s Status (Name, Health, Current Mana Crystals, etc.) and the other half is for the Hero’s field.\r\n" + 
+					"	7. Any other details that might be specific to your own implementation:\r\n" + 
+					"\r\n" + 
+					"\r\n" + 
+					"\r\n" + 
+					"\r\n" + 
+					"\r\n" + 
+					" ");
+			inst.add(instructions);
+			inst.setVisible(true);
+			
+			try {
+				// constructor of file class having file as argument
+				File file = new File("Instructions//Instructions.txt");
+				
+				if (!Desktop.isDesktopSupported())// check if Desktop is supported by Platform or not
+				{
+					System.out.println("not supported");
+					return;
+				}
+				Desktop desktop = Desktop.getDesktop();
+				if (file.exists()) // checks file exists or not
+					desktop.open(file); // opens the specified file
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+
+		}
+	}
+
+	
 
 }
